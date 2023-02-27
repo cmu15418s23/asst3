@@ -126,8 +126,10 @@ sub process_implementation {
         } 
         if ($implementation_type eq "Parallel with One Thread") { 
             $your_par1_build_times{$scene} = $your_build_time;
+            $your_par1_total_times{$scene} = $your_total_time;
         }
-        if ($implementation_type eq "Reference Sequential") { 
+        if ($implementation_type eq "Reference Sequential") {
+            $ref_build_times{$scene} = $your_build_time;
             $ref_total_times{$scene} = $your_total_time;
         }
 }
@@ -201,10 +203,11 @@ sub print_summary {
         my $scene = @scene_names[$i];
         my $tree_score;
         my $total_score;
-        
-        my $tree_num = $your_par1_build_times{$scene}/$your_par_build_times{$scene};
+
+        use List::Util qw(max);
+        my $tree_num = max($your_par1_build_times{$scene}, $ref_build_times{$scene})/$your_par_build_times{$scene};
         my $tree_speedup .= sprintf("%.6f", $tree_num);
-        my $total_num = $ref_total_times{$scene}/$your_par_total_times{$scene};
+        my $total_num = max($your_par1_total_times{$scene}, $ref_total_times{$scene})/$your_par_total_times{$scene};
         my $total_speedup .= sprintf("%.6f", $total_num);
 
         if (! @correct[$i]) {
